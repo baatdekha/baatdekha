@@ -33,7 +33,7 @@ header h2, .cards-wrapper {
   display: flex;
   flex-direction: column;
   gap: 15px;
-  max-width: 500px;
+  max-width: 350px;
 }
 
 .vehicle-reservation .registration-container span {

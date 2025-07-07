@@ -2,7 +2,7 @@ section.cards-container {
   font-family: "Carter One", serif;
   display: flex;
   flex-wrap: wrap;
-  width: 100vw;
+  /* width: 100vw; */
   justify-content: center;
   align-items: center;
   gap: 35px;

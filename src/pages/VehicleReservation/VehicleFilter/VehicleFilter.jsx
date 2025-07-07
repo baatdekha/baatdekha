@@ -11,8 +11,8 @@ import { FaShuttleVan, FaBus, FaTractor, FaTruckPickup, FaTruck } from 'react-ic
 const VehicleFilter = ({ selectedVehicle, setSelectedVehicle }) => {
   const [selectedCategory, setSelectedCategory] = useState('passenger');
   const lastSelectedVehicles = useRef({
-    passenger: 'car',
-    commercial: 'pickup',
+    passenger: '',
+    commercial: '',
   });
 
   const vehicleCategories = [
@@ -21,11 +21,11 @@ const VehicleFilter = ({ selectedVehicle, setSelectedVehicle }) => {
   ];
 
   const passengerVehicles = [
+    { value: 'passengerauto', label: 'Passenger Auto', Icon: AutoIcon },
     { value: 'car', label: 'Car', Icon: CarIcon },
     { value: 'bolero', label: 'Bolero', Icon: BoleroIcon },
-    { value: 'auto', label: 'Auto', Icon: AutoIcon },
     { value: 'van', label: 'Van', Icon: FaShuttleVan },
-    { value: 'bus', label: 'Bus', Icon: FaBus },
+    // { value: 'bus', label: 'Bus', Icon: FaBus },
     { value: 'traveller', label: 'Traveller', Icon: TravellerIcon },
   ];
 
