@@ -1,23 +1,19 @@
 import { useState, useEffect } from "react";
 
-export interface SheetRecord {
-  [key: string]: any;
-}
-
-function normalizeKey(str: string, index: number) {
-  if (!str || str.trim() === "") return `column_${index}`;
-  return str
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, "_")
-    .replace(/[^a-z0-9_]/g, "");
-}
-
-export function useGoogleSheet(
+export function useGoogleSheet<
+  TParsers extends Record<string, (v: unknown) => any>
+>(
   spreadsheetId: string,
-  sheetGid: string
+  sheetGid: string,
+  parsers: TParsers
 ) {
-  const [data, setData] = useState<SheetRecord[] | null>(null);
+  type Row = {
+    [K in keyof TParsers]: ReturnType<TParsers[K]>
+  };
+
+  const columns = Object.keys(parsers) as readonly (keyof Row)[];
+
+  const [data, setData] = useState<Row[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -27,48 +23,40 @@ export function useGoogleSheet(
     async function fetchData() {
       try {
         const url = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json&gid=${sheetGid}`;
-        const response = await fetch(url);
+        const res = await fetch(url);
 
-        if (!response.ok) {
-          throw new Error(`Google Sheets HTTP error: ${response.status}`);
-        }
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
 
-        const text = await response.text();
+        const text = await res.text();
         const prefix = "google.visualization.Query.setResponse(";
-        const startIndex = text.indexOf(prefix);
+        const start = text.indexOf(prefix);
+        if (start === -1) throw new Error("Bad format");
 
-        if (startIndex === -1) {
-          throw new Error("Unexpected Google Sheets format.");
-        }
-
-        const jsonString = text
-          .substring(startIndex + prefix.length)
+        const json = text
+          .substring(start + prefix.length)
           .replace(/\);\s*$/, "");
 
-        const raw = JSON.parse(jsonString);
+        const raw = JSON.parse(json);
         const table = raw.table;
-
-        const headers = table.cols.map((col: any, i: number) =>
-          normalizeKey(col.label || col.id, i)
-        );
 
         const records = table.rows
           .map((row: any) => {
-            const obj: SheetRecord = {};
-            headers.forEach((header: string, i: number) => {
-              const cell = row.c[i];
-              obj[header] = cell?.v ?? null;
+            const obj = {} as Row;
+
+            columns.forEach((key, i) => {
+              const rawVal = row.c[i]?.v;
+              obj[key] = parsers[key](rawVal);
             });
 
-            if (Object.values(obj).every((v) => v === null)) return null;
+            if (Object.values(obj).every(v => v == null)) return null;
             return obj;
           })
-          .filter(Boolean) as SheetRecord[];
+          .filter(Boolean) as Row[];
 
         if (!cancelled) setData(records);
       } catch (err: any) {
         if (!cancelled) {
-          setError(new Error(err?.message || "Failed to load Google Sheet"));
+          setError(new Error(err?.message || "Failed to load"));
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -76,11 +64,10 @@ export function useGoogleSheet(
     }
 
     fetchData();
-
     return () => {
       cancelled = true;
     };
-  }, [spreadsheetId, sheetGid]);
+  }, [spreadsheetId, sheetGid, parsers]);
 
   return { data, loading, error };
 }

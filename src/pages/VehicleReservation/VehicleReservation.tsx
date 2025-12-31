@@ -1,21 +1,47 @@
 import { useMemo, useState } from "react";
 import { useGoogleSheet } from "./useGoogleSheet";
-import { vehicleRecords } from "./vehicleTypes";
+import { vehicleRecords, type VehicleTypes } from "./vehicleTypes";
 import VehicleCard from "./VehicleCard/VehicleCard";
 import VehicleFilter, { type VehicleCategoryTypesWithAll, type VehicleTypesWithAll } from "./VehicleFilter/VehicleFilter";
 import SearchBar from "./SearchBar";
 import { FaCircleQuestion } from "react-icons/fa6";
+import { vehicleOwnerSchema } from "./vehicleOwner.schema";
 
 export const VehicleReservation = () => {
   // Use your deployed Apps Script URL here
     const SHEET_ID = "1JYY3WnpZdJHI4Q17Hq0RDiuQGtwZkjZSkm-n7hOOqGc";
 
   
-  const { data: rawSheetData, loading, error } = useGoogleSheet(SHEET_ID, "0");
+
+const vehicleOwnerDataColumns = [
+  "sl_no",
+  "name",
+  "village",
+  "vehicle_type",
+  "mobile_no",
+] as const
+
+interface VehicleOwnerDataTypes {
+  sl_no: number
+    name: string
+    village: string
+    vehicle_type: VehicleTypes
+    mobile_no: number
+}
+
+const { data: rawSheetData, loading, error } = useGoogleSheet(
+  SHEET_ID,
+  "0",
+  vehicleOwnerSchema.parsers
+);
+
+// `data` is typed as `VehicleOwnerRow[] | null`
+  // const { data: rawSheetData, loading, error } = useGoogleSheet<VehicleOwnerDataTypes>(SHEET_ID, "0", vehicleOwnerDataColumns);
 
   const [selectedVehicleType, setSelectedVehicleType] = useState<VehicleTypesWithAll>("all_types");
   const [selectedCategory, setSelectedCategory] = useState<VehicleCategoryTypesWithAll>("passenger");
   const [searchQuery, setSearchQuery] = useState<string>("");
+
 
   /**
    * Helper: Normalizes sheet values to match vehicleTypes keys.
@@ -32,17 +58,17 @@ export const VehicleReservation = () => {
     if (!rawSheetData || !Array.isArray(rawSheetData)) return [];
 
     return rawSheetData.filter((record) => {
-      const typeKey = normalize(record["vehicle_type"]);
+      const typeKey = record["vehicle_type"];
       
       // Ensure key exists in vehicleTypes and basic info is present
-      const isValidType = Object.prototype.hasOwnProperty.call(vehicleRecords, typeKey);
+      const isValidType = typeKey !== null &&  Object.prototype.hasOwnProperty.call(vehicleRecords, typeKey);
       const hasBasicInfo = record["name"] && record["mobile_no"];
 
       return isValidType && hasBasicInfo;
     });
   }, [rawSheetData]);
 
-  /**
+   /**
    * 2. VIEW FILTERING LAYER
    * Filters based on the Toolbar selection and the Search input.
    */
@@ -122,8 +148,8 @@ export const VehicleReservation = () => {
           <div className="grid grid-cols-1 gap-3 pb-12">
             {visibleVehicles.length > 0 ? (
               visibleVehicles.map((vehicle, index) => {
-                const vehicleKey = normalize(vehicle["vehicle_type"]);
-                const config = vehicleRecords[vehicleKey];
+                const vehicleKey = vehicle["vehicle_type"];
+                const config = vehicleKey !== null && vehicleRecords[vehicleKey];
                 
                 return (
                   <VehicleCard
@@ -131,7 +157,7 @@ export const VehicleReservation = () => {
                     name={vehicle["name"]}
                     village={vehicle["village"] || "Location N/A"}
                     contact={vehicle["mobile_no"]}
-                    Icon={config?.Icon || FaCircleQuestion}
+                    Icon={ config && config?.Icon || FaCircleQuestion}
                   />
                 );
               })
