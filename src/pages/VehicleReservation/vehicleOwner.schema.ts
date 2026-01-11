@@ -1,29 +1,27 @@
-// vehicleOwner.schema.ts
-import type { VehicleTypes } from "./vehicleTypes";
+import { allowedVehicleTypesArray, type VehicleTypes } from "./vehicleTypes";
 
-// allowed vehicle types
-const allowedVehicleTypes: VehicleTypes[] = ["van", "car", "tractor"];
+// const allowedVehicleTypes: VehicleTypes[] = ["van", "car", "tractor"];
 
 export const vehicleOwnerSchema = {
   parsers: {
-    sl_no: (v: unknown) => Number(v),
-    name: (v: unknown) => String(v ?? ""),
-    village: (v: unknown) => String(v ?? ""),
+    sl_no: (v: unknown) => Number(v || 0),
+    name: (v: unknown) => String(v ?? "").trim(),
+    village: (v: unknown) => String(v ?? "").trim() || "Location N/A",
     vehicle_type: (v: unknown): VehicleTypes | null => {
-      if (typeof v !== "string") return null;
-
-      const val = v.trim().toLowerCase();
-      return allowedVehicleTypes.includes(val as VehicleTypes) ? (val as VehicleTypes) : null;
+      const val = String(v ?? "")
+        .toLowerCase()
+        .trim();
+      return allowedVehicleTypesArray.includes(val as VehicleTypes)
+        ? (val as VehicleTypes)
+        : null;
     },
-    mobile_no: (v: unknown) => Number(v),
+    // Keep as string to preserve leading zeros and avoid scientific notation
+    mobile_no: (v: unknown) => String(v ?? "").trim(),
   },
 } as const;
 
-// derive row type automatically
 export type VehicleOwnerRow = {
-  [K in keyof typeof vehicleOwnerSchema.parsers]:
-    ReturnType<(typeof vehicleOwnerSchema.parsers)[K]>
+  [K in keyof typeof vehicleOwnerSchema.parsers]: ReturnType<
+    (typeof vehicleOwnerSchema.parsers)[K]
+  >;
 };
-
-// derive column order automatically
-export const vehicleOwnerColumns = Object.keys(vehicleOwnerSchema.parsers) as readonly (keyof VehicleOwnerRow)[];

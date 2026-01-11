@@ -1,73 +1,57 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
-export function useGoogleSheet<
-  TParsers extends Record<string, (v: unknown) => any>
->(
+export function useGoogleSheet<TParsers extends Record<string, (v: unknown) => any>>(
   spreadsheetId: string,
   sheetGid: string,
   parsers: TParsers
 ) {
-  type Row = {
-    [K in keyof TParsers]: ReturnType<TParsers[K]>
-  };
-
-  const columns = Object.keys(parsers) as readonly (keyof Row)[];
-
+  type Row = { [K in keyof TParsers]: ReturnType<TParsers[K]> };
+  
   const [data, setData] = useState<Row[] | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
+  // Use a ref for parsers to avoid unnecessary effect triggers
+  const parsersRef = useRef(parsers);
+
   useEffect(() => {
-    let cancelled = false;
+    let active = true;
+    const columns = Object.keys(parsersRef.current) as (keyof Row)[];
 
     async function fetchData() {
       try {
         const url = `https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq?tqx=out:json&gid=${sheetGid}`;
         const res = await fetch(url);
-
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        if (!res.ok) throw new Error(`Server responded with ${res.status}`);
 
         const text = await res.text();
-        const prefix = "google.visualization.Query.setResponse(";
-        const start = text.indexOf(prefix);
-        if (start === -1) throw new Error("Bad format");
+        const jsonStr = text.substring(text.indexOf("(") + 1, text.lastIndexOf(")"));
+        const raw = JSON.parse(jsonStr);
 
-        const json = text
-          .substring(start + prefix.length)
-          .replace(/\);\s*$/, "");
+        const records = raw.table.rows.map((row: any) => {
+          const obj = {} as Row;
+          columns.forEach((key, i) => {
+            const rawVal = row.c[i]?.v;
+            obj[key] = parsersRef.current[key](rawVal);
+          });
+          // Check if row has any data
+          return Object.values(obj).some(v => v !== "" && v !== 0 && v !== null) ? obj : null;
+        }).filter(Boolean) as Row[];
 
-        const raw = JSON.parse(json);
-        const table = raw.table;
-
-        const records = table.rows
-          .map((row: any) => {
-            const obj = {} as Row;
-
-            columns.forEach((key, i) => {
-              const rawVal = row.c[i]?.v;
-              obj[key] = parsers[key](rawVal);
-            });
-
-            if (Object.values(obj).every(v => v == null)) return null;
-            return obj;
-          })
-          .filter(Boolean) as Row[];
-
-        if (!cancelled) setData(records);
-      } catch (err: any) {
-        if (!cancelled) {
-          setError(new Error(err?.message || "Failed to load"));
+        if (active) {
+          setData(records);
+          setError(null);
         }
+      } catch (err: any) {
+        if (active) setError(err instanceof Error ? err : new Error("Unknown error"));
       } finally {
-        if (!cancelled) setLoading(false);
+        if (active) setLoading(false);
       }
     }
 
     fetchData();
-    return () => {
-      cancelled = true;
-    };
-  }, [spreadsheetId, sheetGid, parsers]);
+    return () => { active = false; };
+  }, [spreadsheetId, sheetGid]);
 
   return { data, loading, error };
 }

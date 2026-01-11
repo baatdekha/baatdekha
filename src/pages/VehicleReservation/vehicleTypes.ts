@@ -11,9 +11,21 @@ import {
   FaTruck,
 } from "react-icons/fa";
 
-export type VehicleTypes = "passengerauto" | "car" | "bolero" | "van" | "traveller" | "pickup" | "minitruck" | "tractor";
+// export type VehicleTypes = "passengerauto" | "car" | "bolero" | "van" | "traveller" | "pickup" | "minitruck" | "tractor";
+export const allowedVehicleTypesArray = [
+  "passengerauto",
+  "car",
+  "bolero",
+  "van",
+  "traveller",
+  "pickup",
+  "minitruck",
+  "tractor",
+] as const;
 
-export type VehicleCategoryTypes = "passenger" | "commercial"
+export type VehicleTypes = (typeof allowedVehicleTypesArray)[number];
+
+export type VehicleCategoryTypes = "passenger" | "commercial";
 
 export interface VehicleInfoType {
   label: string;
@@ -27,7 +39,7 @@ export const vehicleRecords: Record<VehicleTypes, VehicleInfoType> = {
     Icon: AutoIcon,
     category: "passenger",
   },
-  "car": {
+  car: {
     label: "Car",
     Icon: CarIcon,
     category: "passenger",

@@ -7,7 +7,7 @@ import { type IconType } from "react-icons";
 interface VehicleCardProps {
   name: string
   village: string
-  contact: number
+  contact: string
   Icon: IconType
   // iconSrc: string
 }
