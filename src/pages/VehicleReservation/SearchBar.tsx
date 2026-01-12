@@ -7,6 +7,7 @@ interface SearchBarProps {
   className?: string;
   placeholder?: string;
   onSearch: (value: string) => void;
+  onFocus?: () => void;
   delay?: number;
 }
 
@@ -14,6 +15,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
   className = "",
   placeholder = "Search...", 
   onSearch, 
+  onFocus,
   delay = 500 
 }) => {
   const [inputValue, setInputValue] = useState<string>('');
@@ -50,6 +52,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         placeholder={placeholder}
         value={inputValue}
         onChange={handleChange}
+        onFocus={onFocus}
       />
 
       {/* Clear Button */}
