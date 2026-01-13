@@ -1,18 +1,19 @@
-import { useEffect, useMemo, useState } from "react";
-import { useGoogleSheet } from "./useGoogleSheet";
-import { vehicleRecords } from "./vehicleTypes";
-import VehicleCard from "./VehicleCard/VehicleCard";
-import VehicleFilter, {
-  type VehicleCategoryTypesWithAll,
-  type VehicleTypesWithAll,
-} from "./VehicleFilter/VehicleFilter";
-import SearchBar from "./SearchBar";
+import { useMemo, useState } from "react";
 import { FaCircleQuestion } from "react-icons/fa6";
+import SearchBar from "./SearchBar";
+import { useGoogleSheet } from "./useGoogleSheet";
+import VehicleCard from "./VehicleCard/VehicleCard";
+import VehicleFilter from "./VehicleFilter/VehicleFilter";
 import { vehicleOwnerSchema } from "./vehicleOwner.schema";
+import {
+  VEHICLE_REGISTRY,
+  type VehicleCategoryOrAll,
+  type VehicleId,
+  type VehicleIdOrAll,
+} from "./vehicleTypes";
 
 export const VehicleReservation = () => {
   const SHEET_ID = "1Z_QmGSKoEJ9ycIMpvnRv4ZbcKH4rzH-z";
-  //"1JYY3WnpZdJHI4Q17Hq0RDiuQGtwZkjZSkm-n7hOOqGc";
 
   const { data, loading, error } = useGoogleSheet(
     SHEET_ID,
@@ -20,74 +21,51 @@ export const VehicleReservation = () => {
     vehicleOwnerSchema.parsers,
   );
 
-  const [selectedVehicleType, setSelectedVehicleType] =
-    useState<VehicleTypesWithAll>("all_types");
+  const [selectedVehicle, setSelectedVehicle] = useState<VehicleIdOrAll>("all");
   const [selectedCategory, setSelectedCategory] =
-    useState<VehicleCategoryTypesWithAll>("passenger");
-  const [searchQuery, setSearchQuery] = useState<string>("");
+    useState<VehicleCategoryOrAll>("passenger");
+  const [searchQuery, setSearchQuery] = useState("");
 
-  // Combined Sanitization + Filtering (O(n) complexity)
+  type RawRow = (typeof data)[number];
+
+  function hasValidVehicleType(
+    row: RawRow,
+  ): row is RawRow & { vehicle_type: VehicleId } {
+    return (
+      typeof row.vehicle_type === "string" &&
+      row.vehicle_type in VEHICLE_REGISTRY
+    );
+  }
   const visibleVehicles = useMemo(() => {
     if (!data) return [];
-    const query = searchQuery.toLowerCase().trim();
 
-    return data.filter((v) => {
-      // 1. Basic Validation
-      if (!v.vehicle_type || !v.name || !v.mobile_no) return false;
+    const query = searchQuery.trim().toLowerCase();
 
-      // 2. Filter by Type Toggle
-      // const matchesType = selectedVehicleType === "all_types" || v.vehicle_type === selectedVehicleType;
-      /*
-      let matchesType = false;
-      if (selectedCategory === "all" && selectedVehicleType === "all_types") {
-        matchesType = true;
-      } else if (
-        selectedVehicleType === "all_types" &&
-        selectedCategory === vehicleRecords[v.vehicle_type].category
-      ) {
-        matchesType = true;
-      } else if (v.vehicle_type === selectedVehicleType) {
-        matchesType = true;
-      }*/
-      // shortened 
-      const matchesType =
-  selectedVehicleType === "all_types"
-    ? selectedCategory === "all" ||
-      selectedCategory === vehicleRecords[v.vehicle_type].category
-    : v.vehicle_type === selectedVehicleType
+    return data.filter(hasValidVehicleType).filter((v) => {
+      const meta = VEHICLE_REGISTRY[v.vehicle_type];
 
-      // 3. Filter by Search (Name or Village)
+      const matchesCategory =
+        selectedCategory === "all" || meta.category === selectedCategory;
+
+      const matchesVehicle =
+        selectedVehicle === "all" || v.vehicle_type === selectedVehicle;
+
       const matchesSearch =
+        query === "" ||
         v.name.toLowerCase().includes(query) ||
         v.village.toLowerCase().includes(query);
 
-      return matchesType && matchesSearch;
+      return matchesCategory && matchesVehicle && matchesSearch;
     });
-  }, [data, selectedVehicleType, selectedCategory, searchQuery]);
-
-  // chunk count
-  const CHUNK = 5;
-  const [count, setCount] = useState(CHUNK);
-  useEffect(() => {
-    if (count >= visibleVehicles.length) return;
-
-    let raf: number;
-
-    raf = requestAnimationFrame(() => {
-      setCount((c) => Math.min(c + CHUNK, visibleVehicles.length));
-    });
-
-    return () => cancelAnimationFrame(raf);
-  }, [count, visibleVehicles.length]);
-
+  }, [data, selectedVehicle, selectedCategory, searchQuery]);
   if (error) return <ErrorState error={error} />;
 
   return (
-    <div className="max-w-4xl mx-auto p-4 flex flex-col gap-6 min-h-screen bg-gray-50">
+    <div className="max-w-4xl mx-auto p-4 flex flex-col gap-6 min-h-screen bg-gray-50 font-poppins">
       <header className="sticky top-0 bg-white/90 backdrop-blur-md z-20 py-4 border-b -mx-4 px-4">
         <div className="flex justify-between items-center mb-4">
           <div>
-            <h1 className="text-2xl font-black text-gray-900 tracking-tight">
+            <h1 className="text-2xl font-extrabold text-gray-900/80 tracking-tight">
               Vehicle Directory
             </h1>
             <p className="text-sm text-gray-500 font-medium">
@@ -100,8 +78,8 @@ export const VehicleReservation = () => {
         </div>
 
         <VehicleFilter
-          selectedVehicle={selectedVehicleType}
-          setSelectedVehicle={setSelectedVehicleType}
+          selectedVehicle={selectedVehicle}
+          setSelectedVehicle={setSelectedVehicle}
           selectedCategory={selectedCategory}
           setSelectedCategory={setSelectedCategory}
         />
@@ -111,10 +89,6 @@ export const VehicleReservation = () => {
         <SearchBar
           onSearch={setSearchQuery}
           placeholder="Search name or village..."
-          onFocus={()=> {
-            setSelectedCategory("all")
-            setSelectedVehicleType("all_types")
-          }}
         />
 
         {loading ? (
@@ -122,24 +96,23 @@ export const VehicleReservation = () => {
         ) : (
           <div className="grid grid-cols-1 gap-3 pb-20">
             {visibleVehicles.length > 0 ? (
-              visibleVehicles
-                .slice(0, count)
-                .map((v, i) => (
-                  <VehicleCard
-                    key={`${v.mobile_no}-${i}`}
-                    name={v.name}
-                    village={v.village}
-                    contact={v.mobile_no}
-                    Icon={
-                      vehicleRecords[v.vehicle_type!]?.Icon || FaCircleQuestion
-                    }
-                  />
-                ))
+              visibleVehicles.map((v, i) => (
+                <VehicleCard
+                  key={`${v.mobile_no}-${i}`}
+                  name={v.name}
+                  village={v.village}
+                  contact={v.mobile_no}
+                  Icon={
+                    VEHICLE_REGISTRY[v.vehicle_type]?.Icon || FaCircleQuestion
+                  }
+                />
+              ))
             ) : (
               <NoResultsState
                 onClearFilters={() => {
                   setSearchQuery("");
-                  setSelectedVehicleType("all_types");
+                  setSelectedVehicle("all");
+                  setSelectedCategory("all");
                 }}
               />
             )}

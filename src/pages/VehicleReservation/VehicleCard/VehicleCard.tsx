@@ -1,11 +1,12 @@
-import { IoMdCall } from "react-icons/io";
+import React from "react";
 import { type IconType } from "react-icons";
+import { IoMdCall } from "react-icons/io";
 
 interface VehicleCardProps {
   name: string;
   village: string;
   contact: string;
-  Icon: IconType;
+  Icon: IconType | React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
 }
 
 function VehicleCard({ name, village, contact, Icon }: VehicleCardProps) {
@@ -16,12 +17,12 @@ function VehicleCard({ name, village, contact, Icon }: VehicleCardProps) {
       </div>
 
       <div>
-        <div>{name}</div>
-        <div>{village}</div>
+        <div className="font-semibold text-blue-700/80">{name}</div>
+        <div className="text-gray-500 text-sm">{village}</div>
       </div>
 
       <a href={`tel:${contact}`}>
-        <IoMdCall size={30} color="green" />
+        <IoMdCall size={30} color="#269D54" />
       </a>
     </div>
   );

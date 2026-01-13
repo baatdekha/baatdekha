@@ -1,18 +1,20 @@
+import { type IconType } from "react-icons";
 import AutoIcon from "./assets/auto-rickshaw.svg?react";
 import BoleroIcon from "./assets/bolero.svg?react";
 import CarIcon from "./assets/car.svg?react";
 import TravellerIcon from "./assets/traveller.svg?react";
 
+import type React from "react";
 import {
-  FaShuttleVan,
-  FaBus,
-  FaTractor,
-  FaTruckPickup,
-  FaTruck,
+    FaShuttleVan,
+    FaTractor,
+    FaTruck,
+    FaTruckPickup,
 } from "react-icons/fa";
 
-// export type VehicleTypes = "passengerauto" | "car" | "bolero" | "van" | "traveller" | "pickup" | "minitruck" | "tractor";
-export const allowedVehicleTypesArray = [
+/* ---------- Core domain ---------- */
+
+export const VEHICLE_IDS = [
   "passengerauto",
   "car",
   "bolero",
@@ -23,17 +25,35 @@ export const allowedVehicleTypesArray = [
   "tractor",
 ] as const;
 
-export type VehicleTypes = (typeof allowedVehicleTypesArray)[number];
+export type VehicleId = (typeof VEHICLE_IDS)[number];
 
-export type VehicleCategoryTypes = "passenger" | "commercial";
+export type VehicleCategory = "passenger" | "commercial";
 
-export interface VehicleInfoType {
+/* ---------- UI sentinel extensions ---------- */
+
+export type VehicleIdOrAll = VehicleId | "all";
+export type VehicleCategoryOrAll = VehicleCategory | "all";
+
+/* ---------- Metadata ---------- */
+
+export interface VehicleMeta {
   label: string;
-  Icon: any;
-  category: "passenger" | "commercial";
+  Icon: IconType | React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
+  category: VehicleCategory;
 }
 
-export const vehicleRecords: Record<VehicleTypes, VehicleInfoType> = {
+/* ---------- UI option shape ---------- */
+
+export interface VehicleOption {
+  value: VehicleIdOrAll;
+  label: string;
+  Icon: IconType | React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
+  category: VehicleCategoryOrAll;
+}
+
+/* ---------- Registry (single source of truth) ---------- */
+
+export const VEHICLE_REGISTRY: Record<VehicleId, VehicleMeta> = {
   passengerauto: {
     label: "Passenger Auto",
     Icon: AutoIcon,
@@ -59,7 +79,6 @@ export const vehicleRecords: Record<VehicleTypes, VehicleInfoType> = {
     Icon: TravellerIcon,
     category: "passenger",
   },
-
   pickup: {
     label: "Pick Up",
     Icon: FaTruckPickup,

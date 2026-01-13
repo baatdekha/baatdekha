@@ -1,101 +1,93 @@
 import { useRef, useMemo } from "react";
 import { RadioToolbar, type RadioOption } from "@/components/RadioToolbar";
 import {
-  vehicleRecords,
-  type VehicleCategoryTypes,
-  type VehicleInfoType,
-  type VehicleTypes,
+  VEHICLE_REGISTRY,
+  type VehicleCategoryOrAll,
+  type VehicleMeta,
+  type VehicleOption,
+  type VehicleId,
+  type VehicleIdOrAll,
 } from "../vehicleTypes";
 import { LuLayoutGrid } from "react-icons/lu";
 
-export type VehicleCategoryTypesWithAll = VehicleCategoryTypes | "all";
-
-export type VehicleTypesWithAll = VehicleTypes | "all_types";
-
-type VehicleInfoTypesWithAll = Omit<VehicleInfoType, "category"> & {
-  value: VehicleTypesWithAll;
-  category: VehicleCategoryTypesWithAll;
-};
+/* ---------- Types ---------- */
 
 interface VehicleFilterProps {
-  selectedVehicle: VehicleTypesWithAll;
-  setSelectedVehicle: (v: VehicleTypesWithAll) => void;
-  selectedCategory: VehicleCategoryTypesWithAll;
-  setSelectedCategory: (v: VehicleCategoryTypesWithAll) => void;
+  selectedCategory: VehicleCategoryOrAll;
+  selectedVehicle: VehicleIdOrAll;
+  setSelectedCategory: (v: VehicleCategoryOrAll) => void;
+  setSelectedVehicle: (v: VehicleIdOrAll) => void;
 }
 
-/** Try this:
- * define the states variables in this component
- * return the selectedCategory and selectedVehicle as callback function (onSelect)
- * add a way to reset the values to all
- *
- * should I define separate states for all 3 categories? In that way the lastSelected memory might not needed.
- */
+/* ---------- Pure helpers ---------- */
+
+function buildVehicleOptions(
+  category: VehicleCategoryOrAll,
+): VehicleOption[] {
+  const allVehicles = (
+    Object.entries(VEHICLE_REGISTRY) as [VehicleId, VehicleMeta][]
+  ).map(([value, info]) => ({
+    value,
+    label: info.label,
+    Icon: info.Icon,
+    category: info.category,
+  }));
+
+  const filtered =
+    category === "all"
+      ? allVehicles
+      : allVehicles.filter(v => v.category === category);
+
+  return [
+    {
+      value: "all",
+      label: category === "all" ? "All Vehicles" : `All ${category}`,
+      Icon: LuLayoutGrid,
+      category,
+    },
+    ...filtered,
+  ];
+}
+
+/* ---------- Component ---------- */
 
 const VehicleFilter = ({
-  selectedVehicle,
-  setSelectedVehicle,
   selectedCategory,
+  selectedVehicle,
   setSelectedCategory,
+  setSelectedVehicle,
 }: VehicleFilterProps) => {
   const lastSelected = useRef<
-    Record<VehicleCategoryTypesWithAll, VehicleTypesWithAll>
+    Record<VehicleCategoryOrAll, VehicleIdOrAll>
   >({
-    passenger: "all_types",
-    commercial: "pickup",
-    all: "all_types", // Default "memory" for the All category
+    all: "all",
+    passenger: "all",
+    commercial: "all",
   });
 
-  const categories: RadioOption<VehicleCategoryTypesWithAll>[] = [
+  const categories: RadioOption<VehicleCategoryOrAll>[] = [
     { value: "all", label: "All" },
     { value: "passenger", label: "Passenger", accent: "green" },
     { value: "commercial", label: "Commercial", accent: "teal" },
   ];
 
-  const currentVehicles = useMemo(() => {
-    // 1. Convert the Record object into a flat array of vehicle objects
-    // We include the 'value' (key) inside each object for easier mapping
-    const allVehiclesArray = (
-      Object.entries(vehicleRecords) as [VehicleTypes, VehicleInfoType][]
-    ).map(([key, info]) => ({
-      value: key,
-      label: info.label,
-      Icon: info.Icon,
-      category: info.category, // Keep track of category for filtering
-    }));
+  const vehicleOptions = useMemo(
+    () => buildVehicleOptions(selectedCategory),
+    [selectedCategory],
+  );
 
-    // 2. Filter by category if a specific one is chosen
-    // If selectedCategory is "all", we keep everything
-    const filteredByCategory = allVehiclesArray.filter(
-      (v) => selectedCategory === "all" || v.category === selectedCategory,
-    );
-
-    // 3. Create the "All Vehicles" virtual option
-    // This option will now dynamically represent "All Passenger", "All Commercial", or "All Types"
-    const allOption = {
-      value: "all_types",
-      label:
-        selectedCategory === "all" ? "All Vehicles" : `All ${selectedCategory}`,
-      Icon: LuLayoutGrid,
-    };
-
-    // 4. Combine: [ "All ...", ...filteredItems ]
-    return [allOption, ...filteredByCategory] as [VehicleInfoTypesWithAll];
-  }, [selectedCategory]);
-
-  const handleVehicleChange = (vehicle: VehicleTypesWithAll) => {
+  const handleVehicleChange = (vehicle: VehicleIdOrAll) => {
     setSelectedVehicle(vehicle);
     lastSelected.current[selectedCategory] = vehicle;
   };
 
-  const handleCategoryChange = (category: VehicleCategoryTypesWithAll) => {
+  const handleCategoryChange = (category: VehicleCategoryOrAll) => {
     setSelectedCategory(category);
-    setSelectedVehicle(lastSelected.current[category] ?? "all_types");
+    setSelectedVehicle(lastSelected.current[category] ?? "all");
   };
 
   return (
-    <div id="filter-container" className="flex flex-col gap-6 p-4">
-      {/* Category Selection */}
+    <div className="flex flex-col gap-6 p-4">
       <div>
         <label className="text-sm font-semibold text-gray-600 block mb-3">
           Select Category
@@ -108,15 +100,13 @@ const VehicleFilter = ({
         />
       </div>
 
-      {/* Specific Vehicle Selection (Includes "All" option) */}
-      <div className="">
-        <label className="text-sm font-semibold text-gray-600 block mb-3 overflow-x-hidden">
+      <div>
+        <label className="text-sm font-semibold text-gray-600 block mb-3">
           Filter by Specific Vehicle Type
         </label>
         <RadioToolbar
-          className="relative w-full"
           name="vehicle-filter"
-          options={currentVehicles}
+          options={vehicleOptions}
           value={selectedVehicle}
           onChange={handleVehicleChange}
           iconPosition="top"

@@ -1,4 +1,4 @@
-import { allowedVehicleTypesArray, type VehicleTypes } from "./vehicleTypes";
+import { VEHICLE_IDS, type VehicleId } from "./vehicleTypes";
 
 // const allowedVehicleTypes: VehicleTypes[] = ["van", "car", "tractor"];
 
@@ -7,12 +7,12 @@ export const vehicleOwnerSchema = {
     sl_no: (v: unknown) => Number(v || 0),
     name: (v: unknown) => String(v ?? "").trim(),
     village: (v: unknown) => String(v ?? "").trim() || "Location N/A",
-    vehicle_type: (v: unknown): VehicleTypes | null => {
+    vehicle_type: (v: unknown): VehicleId | null => {
       const val = String(v ?? "")
         .toLowerCase()
         .trim();
-      return allowedVehicleTypesArray.includes(val as VehicleTypes)
-        ? (val as VehicleTypes)
+      return VEHICLE_IDS.includes(val as VehicleId)
+        ? (val as VehicleId)
         : null;
     },
     // Keep as string to preserve leading zeros and avoid scientific notation
