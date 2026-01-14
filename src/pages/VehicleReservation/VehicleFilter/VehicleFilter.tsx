@@ -68,7 +68,7 @@ const VehicleFilter = ({
   const categories: RadioOption<VehicleCategoryOrAll>[] = [
     { value: "all", label: "All" },
     { value: "passenger", label: "Passenger", accent: "green" },
-    { value: "commercial", label: "Commercial", accent: "teal" },
+    { value: "commercial", label: "Commercial", accent: "orange" },
   ];
 
   const vehicleOptions = useMemo(
@@ -110,6 +110,7 @@ const VehicleFilter = ({
           value={selectedVehicle}
           onChange={handleVehicleChange}
           iconPosition="top"
+          accent="blue"
         />
       </div>
     </div>

@@ -11,6 +11,7 @@ import {
   type VehicleId,
   type VehicleIdOrAll,
 } from "./vehicleTypes";
+import { RegisterNow } from "./RegisterNow";
 
 export const VehicleReservation = () => {
   const SHEET_ID = "1Z_QmGSKoEJ9ycIMpvnRv4ZbcKH4rzH-z";
@@ -63,6 +64,7 @@ export const VehicleReservation = () => {
   return (
     <div className="max-w-4xl mx-auto p-4 flex flex-col gap-6 min-h-screen bg-gray-50 font-poppins">
       <header className="sticky top-0 bg-white/90 backdrop-blur-md z-20 py-4 border-b -mx-4 px-4">
+        <RegisterNow/>
         <div className="flex justify-between items-center mb-4">
           <div>
             <h1 className="text-2xl font-extrabold text-gray-900/80 tracking-tight">
