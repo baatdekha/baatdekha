@@ -4,7 +4,7 @@ export interface Worker {
   name: string;
   village: string;
   occupation: string;
-  contact: string;
+  mobile_no: string;
   imgSrc: string;
 }
 
@@ -46,9 +46,9 @@ export async function fetchWorkers() {
     .filter(Boolean)
     .map((cells: any) => ({
       name: cells[1]?.v || "",
+      contact: cells[2]?.v || "",
       village: cells[3]?.v || "",
       occupation: cells[4]?.v || "",
-      contact: cells[2]?.v || "",
       imgSrc: `${cells[1]?.v.replaceAll(" ", "-")}.jpg` || "",
     }));
 }

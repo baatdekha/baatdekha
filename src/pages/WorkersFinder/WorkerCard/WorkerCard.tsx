@@ -8,7 +8,7 @@ export default function WorkerCard({
   name,
   village,
   occupation,
-  contact,
+  mobile_no,
   imgSrc,
 }: WorkerCardProps) {
   return (
@@ -31,7 +31,7 @@ export default function WorkerCard({
         <span className="occupation">{occupation}</span>
       </div>
 
-      <a href={`tel:${contact}`} className="inline-flex gap-2 justify-center bg-green-600 rounded-2xl p-2 text-white w-full">
+      <a href={`tel:${mobile_no}`} className="inline-flex gap-2 justify-center bg-green-600 rounded-2xl p-2 text-white w-full">
         <MdCall className="call-icon" size={26} />
         <span>Call Me</span>
       </a>

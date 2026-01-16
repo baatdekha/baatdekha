@@ -1,40 +1,33 @@
 // hooks/useWorkers.ts
 import { useEffect, useMemo, useState } from "react";
 import { fetchWorkers, type Worker } from "../services/workersService";
+import { useGoogleSheet } from "./useGoogleSheet";
+import { workersFinderSchema } from "@/pages/WorkersFinder/workersFinder.schema";
 
 export function useWorkers() {
-  const [workers, setWorkers] = useState<Worker[]>([]);
   const [selectedOccupation, setSelectedOccupation] = useState("all");
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    const load = async () => {
-      try {
-        const data = await fetchWorkers();
-        console.log(data)
-        setWorkers(data);
-      } catch (err) {
-        setError("Failed to load workers");
-      }
-      setLoading(false);
-    };
-
-    load();
-  }, []);
+  const sheetId = "1zeaDjkbOtWjIxLx-YxZKHA0b1mSuSZsd2mgcw5C_5Pk";
+  const { data, loading, error } = useGoogleSheet(
+    sheetId,
+    "0",
+    workersFinderSchema.parsers,
+  );
 
   const occupations = useMemo(() => {
-    const set = new Set(workers.map(w => w.occupation));
+    const fdata = data.filter((d) => d.occupation !== null);
+    const set = new Set(fdata.map((w) => w.occupation));
     return ["all", ...set];
-  }, [workers]);
+  }, [data]);
 
+  
   const filtered = useMemo(() => {
-    if (selectedOccupation === "all") return workers;
-    return workers.filter(w => w.occupation === selectedOccupation);
-  }, [workers, selectedOccupation]);
+    if (selectedOccupation === "all") return data;
+    return data.filter((w) => w.occupation === selectedOccupation);
+  }, [data, selectedOccupation]);
 
   return {
-    workers,
+    data,
     occupations,
     filtered,
     selectedOccupation,
