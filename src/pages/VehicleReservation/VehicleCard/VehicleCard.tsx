@@ -11,7 +11,7 @@ interface VehicleCardProps {
 
 function VehicleCard({ name, village, contact, Icon }: VehicleCardProps) {
   return (
-    <div className="grid grid-cols-[60px_1fr_50px] items-center gap-3 w-full p-3 bg-blue-100/60 rounded-xl">
+    <div className="grid grid-cols-[60px_1fr_40px] items-center gap-3 w-full p-3 bg-blue-200/60 rounded-xl">
       <div className="flex justify-center">
         <Icon size={40} height={35} />
       </div>
@@ -21,7 +21,7 @@ function VehicleCard({ name, village, contact, Icon }: VehicleCardProps) {
         <div className="text-gray-500 text-sm">{village}</div>
       </div>
 
-      <a href={`tel:${contact}`}>
+      <a href={`tel:${contact}`} className="text-center flex justify-center">
         <IoMdCall size={30} color="#269D54" />
       </a>
     </div>
