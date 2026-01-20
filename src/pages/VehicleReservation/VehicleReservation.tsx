@@ -1,7 +1,9 @@
+import { useGoogleSheet } from "@/hooks/useGoogleSheet";
 import { useMemo, useState } from "react";
 import { FaCircleQuestion } from "react-icons/fa6";
+import { LoadingState } from "./LoadingState.tsx";
+import { RegisterVehicleCTA } from "./RegisterVehicleCTA.tsx";
 import SearchBar from "./SearchBar";
-import { useGoogleSheet } from "@/hooks/useGoogleSheet";
 import VehicleCard from "./VehicleCard/VehicleCard";
 import VehicleFilter from "./VehicleFilter/VehicleFilter";
 import { vehicleOwnerSchema } from "./vehicleOwner.schema";
@@ -11,7 +13,6 @@ import {
   type VehicleId,
   type VehicleIdOrAll,
 } from "./vehicleTypes";
-import { RegisterNow } from "./RegisterNow";
 
 export const VehicleReservation = () => {
   const SHEET_ID = "1Z_QmGSKoEJ9ycIMpvnRv4ZbcKH4rzH-z";
@@ -62,64 +63,94 @@ export const VehicleReservation = () => {
   if (error) return <ErrorState error={error} />;
 
   return (
-    <div className="max-w-4xl mx-auto p-4 flex flex-col gap-6 min-h-screen bg-gray-50 font-poppins">
-      <header className="sticky top-0 bg-white/90 backdrop-blur-md z-20 py-4 border-b -mx-4 px-4">
-        <RegisterNow/>
-        <div className="flex justify-between items-center mb-4">
+    <div className="flex flex-col items-center bg-[#F8FAFC] min-h-screen font-poppins pb-20">
+      {/* 1. STICKY HEADER */}
+      <header className="w-full bg-white/90 backdrop-blur-md shadow-sm border-b border-slate-200 sticky top-0 z-30 px-4 py-4">
+        <div className="max-w-xl mx-auto">
+          <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">
+            Vehicle <span className="text-blue-600">Directory</span>
+          </h1>
+          <p className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+            Trusted Local Transport Services
+          </p>
+        </div>
+      </header>
+
+      <main className="w-full max-w-xl px-4">
+        {/* 2. REGISTRATION CTA (Centered) */}
+        <div className="flex justify-center w-full my-6">
+          <RegisterVehicleCTA />
+        </div>
+
+        {/* 3. CONTROL PANEL: FILTER & SEARCH */}
+        <div className="bg-white rounded-2xl shadow-sm border border-slate-100 mb-6">
+          <label className="block text-xs font-bold text-slate-400 uppercase tracking-wider p-4">
+            Filter by Type
+          </label>
+
+          {/* Filter Toolbar */}
           <div>
-            <h1 className="text-2xl font-extrabold text-gray-900/80 tracking-tight">
-              Vehicle Directory
-            </h1>
-            <p className="text-sm text-gray-500 font-medium">
-              Verified local transport
-            </p>
+            <VehicleFilter
+              selectedVehicle={selectedVehicle}
+              setSelectedVehicle={setSelectedVehicle}
+              selectedCategory={selectedCategory}
+              setSelectedCategory={setSelectedCategory}
+            />
           </div>
-          <div className="bg-blue-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-sm">
-            {visibleVehicles.length} ITEMS
+
+          {/* Search Bar (Placed below filter) */}
+          <div className="pt-4 p-4 border-t border-slate-50">
+            <SearchBar
+              onSearch={setSearchQuery}
+              placeholder="Search name or village..."
+              className="w-full"
+            />
           </div>
         </div>
 
-        <VehicleFilter
-          selectedVehicle={selectedVehicle}
-          setSelectedVehicle={setSelectedVehicle}
-          selectedCategory={selectedCategory}
-          setSelectedCategory={setSelectedCategory}
-        />
-      </header>
+        {/* 4. RESULTS SECTION */}
+        <section>
+          {!loading && (
+            <div className="flex justify-between items-center mb-4 px-1">
+              <h2 className="font-bold text-slate-700 capitalize text-lg">
+                {selectedVehicle === "all" ? "All Vehicles" : selectedVehicle}
+              </h2>
+              {/* Matches Counter - Similar to Worker Project */}
+              <span className="text-xs font-bold bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full shadow-sm">
+                {visibleVehicles.length} Found
+              </span>
+            </div>
+          )}
 
-      <main className="flex flex-col gap-4">
-        <SearchBar
-          onSearch={setSearchQuery}
-          placeholder="Search name or village..."
-        />
-
-        {loading ? (
-          <LoadingState />
-        ) : (
-          <div className="grid grid-cols-1 gap-3 pb-20">
-            {visibleVehicles.length > 0 ? (
-              visibleVehicles.map((v, i) => (
-                <VehicleCard
-                  key={`${v.mobile_no}-${i}`}
-                  name={v.name}
-                  village={v.village}
-                  contact={v.mobile_no}
-                  Icon={
-                    VEHICLE_REGISTRY[v.vehicle_type]?.Icon || FaCircleQuestion
-                  }
+          {loading ? (
+            <LoadingState />
+          ) : (
+            <div className="grid grid-cols-1 gap-3">
+              {visibleVehicles.length > 0 ? (
+                visibleVehicles.map((v, i) => (
+                  <VehicleCard
+                    key={`${v.mobile_no}-${i}`}
+                    name={v.name}
+                    village={v.village}
+                    contact={v.mobile_no}
+                    vehicle_type={v.vehicle_type} // Passing vehicle_type as requested
+                    Icon={
+                      VEHICLE_REGISTRY[v.vehicle_type]?.Icon || FaCircleQuestion
+                    } // Keeping Icon prop
+                  />
+                ))
+              ) : (
+                <NoResultsState
+                  onClearFilters={() => {
+                    setSearchQuery("");
+                    setSelectedVehicle("all");
+                    setSelectedCategory("all");
+                  }}
                 />
-              ))
-            ) : (
-              <NoResultsState
-                onClearFilters={() => {
-                  setSearchQuery("");
-                  setSelectedVehicle("all");
-                  setSelectedCategory("all");
-                }}
-              />
-            )}
-          </div>
-        )}
+              )}
+            </div>
+          )}
+        </section>
       </main>
     </div>
   );
@@ -136,17 +167,6 @@ function ErrorState({ error }: { error: Error }) {
       >
         Try Again
       </button>
-    </div>
-  );
-}
-
-function LoadingState() {
-  return (
-    <div className="flex flex-col items-center justify-center py-32 gap-3">
-      <div className="w-10 h-10 border-4 border-blue-600/20 border-t-blue-600 rounded-full animate-spin" />
-      <p className="text-gray-400 font-medium animate-pulse">
-        Updating directory...
-      </p>
     </div>
   );
 }

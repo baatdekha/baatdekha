@@ -40,6 +40,8 @@ export interface VehicleMeta {
   label: string;
   Icon: IconType | React.FunctionComponent<React.SVGProps<SVGSVGElement>>;
   category: VehicleCategory;
+  bg: string;
+  text: string;
 }
 
 /* ---------- UI option shape ---------- */
@@ -58,40 +60,56 @@ export const VEHICLE_REGISTRY: Record<VehicleId, VehicleMeta> = {
     label: "Passenger Auto",
     Icon: AutoIcon,
     category: "passenger",
+    bg: "bg-amber-100",
+    text: "text-amber-700",
   },
   car: {
     label: "Car",
     Icon: CarIcon,
     category: "passenger",
+    bg: "bg-blue-100",
+    text: "text-blue-700",
   },
   bolero: {
     label: "Bolero",
     Icon: BoleroIcon,
     category: "passenger",
+    bg: "bg-slate-100",
+    text: "text-slate-700",
   },
   van: {
     label: "Van",
     Icon: FaShuttleVan,
     category: "passenger",
+    bg: "bg-purple-100",
+    text: "text-purple-700",
   },
   traveller: {
     label: "Traveller",
     Icon: TravellerIcon,
     category: "passenger",
+    bg: "bg-indigo-100",
+    text: "text-indigo-700",
   },
   pickup: {
     label: "Pick Up",
     Icon: FaTruckPickup,
     category: "commercial",
+    bg: "bg-orange-100",
+    text: "text-orange-700",
   },
   tractor: {
     label: "Tractor",
     Icon: FaTractor,
     category: "commercial",
+    bg: "bg-red-100",
+    text: "text-red-700",
   },
   minitruck: {
     label: "Mini Truck",
     Icon: FaTruck,
     category: "commercial",
+    bg: "bg-emerald-100",
+    text: "text-emerald-700",
   },
 };
