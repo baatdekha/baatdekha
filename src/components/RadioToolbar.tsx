@@ -115,7 +115,7 @@ const colorClasses = isChecked ? checked : unchecked;
               `}
               >
                 {Icon && <Icon size={34} height={34} />}
-                <span>{label ?? optionValue}</span>
+                <span className="capitalize">{label ?? optionValue}</span>
               </div>
             </label>
           );
