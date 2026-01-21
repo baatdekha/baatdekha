@@ -5,6 +5,7 @@ import Home from "./pages/Home/Home"
 import ShopTogether from "./pages/ShopTogether/ShopTogether"
 import WorkersFinder from "./pages/WorkersFinder/WorkersFinder"
 import { VehicleReservation } from "./pages/VehicleReservation/VehicleReservation"
+import PaintsMaker from "./pages/PaintsMaker/PaintsMaker"
 
 function App() {
   // const [count, setCount] = useState(0)
@@ -17,6 +18,7 @@ function App() {
           <Route path="shop-together" element={<ShopTogether/>}/>
           <Route path="workers-finder" element={<WorkersFinder/>}/>
           <Route path="vehicle-reservation" element={<VehicleReservation/>}/>
+          <Route path="paints-maker" element={<PaintsMaker />}/>
         </Route>
       </Routes>
     </BrowserRouter>

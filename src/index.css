@@ -111,3 +111,51 @@ body {
 .animate-skeleton {
   animation: skeleton-pulse 1.5s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
+
+
+/* PaintsMaker related styles  */
+/* Custom Slider Styles */
+.hue-slider-input {
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+  width: 100%;
+}
+
+/* Chrome, Safari, Edge */
+.hue-slider-input::-webkit-slider-thumb {
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 9999px;
+  border: 3px solid #ccc;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  margin-top: -6px; /* Adjust to center on track */
+}
+
+.hue-slider-input:active::-webkit-slider-thumb {
+  transform: scale(0.95);
+}
+
+.hue-slider-input::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 12px;
+  border-radius: 9999px;
+}
+
+/* Firefox */
+.hue-slider-input::-moz-range-thumb {
+  width: 24px;
+  height: 24px;
+  background: white;
+  border-radius: 9999px;
+  border: none;
+  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+}
+
+.hue-slider-input::-moz-range-track {
+  width: 100%;
+  height: 12px;
+  border-radius: 9999px;
+}
