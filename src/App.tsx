@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom"
 import { MainLayout } from "./Layout/MainLayout"
 import Home from "./pages/Home/Home"
-import ShopTogether from "./pages/ShopTogether/ShopTogether"
 import WorkersFinder from "./pages/WorkersFinder/WorkersFinder"
 import { VehicleReservation } from "./pages/VehicleReservation/VehicleReservation"
 import PaintsMaker from "./pages/PaintsMaker/PaintsMaker"
@@ -9,6 +8,7 @@ import { Terms } from "./pages/Terms/Terms"
 import { AboutUs } from "./pages/AboutUs/AboutUs"
 import { ContactUs } from "./pages/ContactUs/ContactUs"
 import { ServiceGuide } from "./pages/ServiceGuide/ServiceGuide"
+import { ComingSoon } from "./pages/ShopTogether/ComingSoon"
 
 function App() {
 
@@ -17,7 +17,7 @@ function App() {
       <Routes>
         <Route element={<MainLayout/>}>
           <Route path="/" element={<Home/>}/>
-          <Route path="shop-together" element={<ShopTogether/>}/>
+          <Route path="shop-together" element={<ComingSoon/>}/>
           <Route path="workers-finder" element={<WorkersFinder/>}/>
           <Route path="vehicle-reservation" element={<VehicleReservation/>}/>
           <Route path="paints-maker" element={<PaintsMaker />}/>
