@@ -19,7 +19,7 @@ function Header() {
   }, []);
 
   let headerScrolledStyle =
-    scrolled || isMenuOpen ? "bg-white text-amber-600 shadow-lg" : "text-white";
+    scrolled || isMenuOpen ? "bg-white/80 backdrop-blur-lg text-amber-600 shadow-lg" : "text-white";
 
   return (
     <>
@@ -32,8 +32,8 @@ function Header() {
           </button>
           <span>Your Smart Ways</span>
         </header>
-        <div className="image-cover">
-          <img src={banner} alt="baatdekha.com" />
+        <div className="">
+          <img src={banner} alt="baatdekha.com" className="md:h-80 w-full object-cover object-center" />
         </div>
       </div>
       <Menu

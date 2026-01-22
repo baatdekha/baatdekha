@@ -36,12 +36,12 @@ export const Menu: React.FC<MenuProps> = ({ isOpen, onClose, items }) => {
           fixed top-0 left-0 right-0 z-50 
           bg-white/95 backdrop-blur-lg shadow-2xl rounded-b-3xl
           transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]
+          md:max-w-xs
           ${isOpen ? "translate-y-0" : "-translate-y-full"}
         `}
       >
         <div className="max-w-5xl pt-16 mx-auto overflow-hidden">
-          {/* The List: Mobile 1 col, Desktop 2 col to save height */}
-          <nav className="grid grid-cols-1 md:grid-cols-2 gap-x-8 px-4 pb-10">
+          <nav className="grid grid-cols-1 gap-x-8 px-4 pb-10">
             {items.map((item) => (
               <div
                 key={item.id}
