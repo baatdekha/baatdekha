@@ -1,0 +1,14 @@
+{
+  "projects": {
+    "default": "peaceful-surge-406508"
+  },
+  "targets": {
+    "peaceful-surge-406508": {
+      "hosting": {
+        "baatdekha": [
+          "baatdekha"
+        ]
+      }
+    }
+  }
+}
