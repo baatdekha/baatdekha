@@ -1,8 +1,13 @@
 
 // components/WorkerCard/WorkerCard.tsx
 import { MdCall, MdLocationOn } from "react-icons/md";
-import { type Worker } from "@/services/workersService";
-
+export interface Worker {
+  name: string;
+  village: string;
+  occupation: string;
+  mobile_no: string;
+  imgSrc: string;
+}
 interface WorkerCardProps extends Worker {}
 
 export default function WorkerCard({

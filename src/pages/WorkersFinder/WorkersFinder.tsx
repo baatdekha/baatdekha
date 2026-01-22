@@ -135,7 +135,7 @@ export default function WorkersFinder() {
               {[1, 2, 3, 4].map((n) => (
                 <div
                   key={n}
-                  className="animate-skeleton-shimmer aspect-[4/5] rounded-2xl"
+                  className="animate-skeleton-shimmer aspect-4/5 rounded-2xl"
                 />
               ))}
             </div>

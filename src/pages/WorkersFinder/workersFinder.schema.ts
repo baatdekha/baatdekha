@@ -1,4 +1,4 @@
-import { OCCUPATION_IDS, type OccupationId } from "./workerTypes";
+// import { OCCUPATION_IDS, type OccupationId } from "./workerTypes";
 
 export const workersFinderSchema = {
   parsers: {
