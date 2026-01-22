@@ -15,7 +15,8 @@ import {
 } from "./vehicleTypes";
 
 export const VehicleReservation = () => {
-  const SHEET_ID = "1Z_QmGSKoEJ9ycIMpvnRv4ZbcKH4rzH-z";
+  const SHEET_ID = "1pNTiO4UdVJNZFr-1P1wXrCx4xfpHw4-2dF-_0D_M55M"
+    //"1Z_QmGSKoEJ9ycIMpvnRv4ZbcKH4rzH-z";
 
   const { data, loading, error } = useGoogleSheet(
     SHEET_ID,
@@ -65,7 +66,7 @@ export const VehicleReservation = () => {
   return (
     <div className="flex flex-col items-center bg-[#F8FAFC] min-h-screen font-poppins pb-20">
       {/* 1. STICKY HEADER */}
-      <header className="w-full bg-white/90 backdrop-blur-md shadow-sm border-b border-slate-200 sticky top-0 z-30 px-4 py-4">
+      <header className="w-full bg-white/90 backdrop-blur-md shadow-sm border-b border-slate-200 sticky top-12 z-30 px-4 py-4">
         <div className="max-w-xl mx-auto">
           <h1 className="text-2xl font-extrabold text-slate-800 tracking-tight">
             Vehicle <span className="text-blue-600">Directory</span>
@@ -77,7 +78,7 @@ export const VehicleReservation = () => {
       </header>
 
       <main className="w-full max-w-xl px-4">
-        {/* 2. REGISTRATION CTA (Centered) */}
+        {/* 2. REGISTRATION CTA */}
         <div className="flex justify-center w-full my-6">
           <RegisterVehicleCTA />
         </div>
