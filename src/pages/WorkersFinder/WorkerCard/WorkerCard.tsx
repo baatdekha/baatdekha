@@ -1,14 +1,12 @@
-
-// components/WorkerCard/WorkerCard.tsx
 import { MdCall, MdLocationOn } from "react-icons/md";
-export interface Worker {
+
+export interface WorkerCardProps {
   name: string;
   village: string;
   occupation: string;
   mobile_no: string;
   imgSrc: string;
 }
-interface WorkerCardProps extends Worker {}
 
 export default function WorkerCard({
   name,
@@ -19,7 +17,6 @@ export default function WorkerCard({
 }: WorkerCardProps) {
   return (
     <div className="flex flex-col bg-white rounded-2xl shadow-md overflow-hidden border border-slate-100 h-full">
-      
       {/* 1. PORTRAIT IMAGE - Tall aspect ratio for selfies */}
       <div className="relative bg-slate-100 w-full">
         <img
@@ -31,12 +28,12 @@ export default function WorkerCard({
             (e.currentTarget as HTMLImageElement).src = "/avatar.jpg";
           }}
         />
-        
+
         {/* Occupation Overlay - Clean & Compact */}
         <div className="absolute top-2 left-2 right-2">
-           <span className="inline-block bg-black/50 backdrop-blur-md text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider">
-             {occupation}
-           </span>
+          <span className="inline-block bg-black/70 text-white text-[10px] font-bold px-2 py-1 rounded-md uppercase tracking-wider">
+            {occupation}
+          </span>
         </div>
       </div>
 
