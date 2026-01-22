@@ -1,47 +1,38 @@
-
-import {Card} from "./Card";
-// import "./home.css";
-import paintsMakerImg from "./paints-maker.jpg";
-// import tilesCalcImg from "./tiles-calculator.jpg";
-import workersFinderImg from "./workers-finder.jpeg";
-import shoppingImg from "./shopping-in-raghunathpali.jpeg";
-import vehicleReservationImg from "./vehicle-reservation.jpg";
+import { FeatureCard } from "./FeatureCard";
+import paintsMakerImg from "./assets/paints-maker.jpg";
+import shoppingImg from "./assets/shopping-in-raghunathpali.jpeg";
+import vehicleReservationImg from "./assets/vehicle-reservation.jpg";
+import workersFinderImg from "./assets/workers-finder.jpeg";
 
 function Home() {
   return (
-    <section className="flex flex-wrap justify-center gap-5">
-      <Card
-        link="/paints-Maker"
-        imgSrc={paintsMakerImg}
-        alt="Paints Maker"
-        label="Choose a perfect paint and know the price."
-      />
-      <Card
-        link="/workers-finder"
-        imgSrc={workersFinderImg}
-        alt="workers-app"
-        label="You can find any types of worker in this section."
-      />
-      {/*
-      <Card
-        link="/tiles-calculator"
-        imgSrc={tilesCalcImg}
-        alt="tiles-calculator"
-        label="Calculate with accuracy and save your money smartly."
-      />
-      */}
-      <Card
-        link="/vehicle-reservation"
-        imgSrc={vehicleReservationImg}
-        alt="vehicle-reservation"
-        label="Vehicle Reservation"
-      />
-      <Card
-        link="/shop-together"
-        imgSrc={shoppingImg}
-        alt="shopping-in-raghunathpali"
-        label="Shopping in your local area."
-      />
+    <section className="container mx-auto px-8 my-20">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-16 justify-items-center">
+        <FeatureCard
+          href="/paints-Maker"
+          image={paintsMakerImg}
+          imageAlt="Paints Maker"
+          description="Choose a perfect paint and know the price."
+        />
+        <FeatureCard
+          href="/workers-finder"
+          image={workersFinderImg}
+          imageAlt="workers-app"
+          description="You can find any types of worker in this section."
+        />
+        <FeatureCard
+          href="/vehicle-reservation"
+          image={vehicleReservationImg}
+          imageAlt="vehicle-reservation"
+          description="Reserve vehicles for your journey or commercial transport needs."
+        />
+        <FeatureCard
+          href="/shop-together"
+          image={shoppingImg}
+          imageAlt="shopping-in-raghunathpali"
+          description="Shopping in your local area."
+        />
+      </div>
     </section>
   );
 }
