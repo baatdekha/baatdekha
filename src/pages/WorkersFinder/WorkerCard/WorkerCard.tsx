@@ -20,7 +20,7 @@ export default function WorkerCard({
         <img
           src={imgSrc}
           alt={name}
-          className="w-full h-50 object-cover object-top"
+          className="w-full h-50 md:h-64 object-cover object-top"
           loading="lazy"
           onError={(e) => {
             (e.currentTarget as HTMLImageElement).src = "/avatar.jpg";
@@ -36,7 +36,7 @@ export default function WorkerCard({
       </div>
 
       {/* 2. INFO SECTION - Optimized for narrow columns */}
-      <div className="flex flex-col p-3 flex-grow justify-between gap-3">
+      <div className="flex flex-col p-3 grow justify-between gap-3">
         <div>
           <h3 className="text-base font-bold text-slate-900 leading-tight line-clamp-1">
             {name}
