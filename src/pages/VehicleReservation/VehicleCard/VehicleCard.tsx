@@ -28,7 +28,7 @@ export default function VehicleCard({
         <meta.Icon
           size={40}
           height={45}
-          className="w-auto max-h-[35px] object-contain opacity-90"
+          className="max-h-10 object-contain opacity-90"
         />
       </div>
 
@@ -47,7 +47,7 @@ export default function VehicleCard({
 
           {/* Badge colors come directly from the Registry */}
           <span
-            className={`px-2 py-0.5 ${meta.bg} ${meta.text} text-[10px] font-extrabold rounded-md uppercase whitespace-nowrap`}
+            className={`px-2 py-0.5 ${meta.bg ?? "bg-neutral-200/70" } ${meta.text ?? "text-neutral-700" } text-[10px] font-extrabold rounded-md uppercase whitespace-nowrap`}
           >
             {meta.label}
           </span>
