@@ -1,14 +1,13 @@
-import { useRef, useMemo } from "react";
+import { useMemo, useRef } from "react";
 import { RadioToolbar, type RadioOption } from "@/components/RadioToolbar";
+
 import {
-  VEHICLE_REGISTRY,
+  VEHICLE_OPTIONS,
+  VEHICLE_OPTIONS_WITH_ALL,
   type VehicleCategoryOrAll,
-  type VehicleMeta,
-  type VehicleOption,
-  type VehicleId,
   type VehicleIdOrAll,
-} from "../vehicleTypes";
-import { LuLayoutGrid } from "react-icons/lu";
+  type VehicleOption,
+} from "../registry/vehicles.options";
 
 /* ---------- Types ---------- */
 
@@ -19,36 +18,6 @@ interface VehicleFilterProps {
   setSelectedVehicle: (v: VehicleIdOrAll) => void;
 }
 
-/* ---------- Pure helpers ---------- */
-
-function buildVehicleOptions(
-  category: VehicleCategoryOrAll,
-): VehicleOption[] {
-  const allVehicles = (
-    Object.entries(VEHICLE_REGISTRY) as [VehicleId, VehicleMeta][]
-  ).map(([value, info]) => ({
-    value,
-    label: info.label,
-    Icon: info.Icon,
-    category: info.category,
-  }));
-
-  const filtered =
-    category === "all"
-      ? allVehicles
-      : allVehicles.filter(v => v.category === category);
-
-  return [
-    {
-      value: "all",
-      label: category === "all" ? "All Vehicles" : `All ${category}`,
-      Icon: LuLayoutGrid,
-      category,
-    },
-    ...filtered,
-  ];
-}
-
 /* ---------- Component ---------- */
 
 const VehicleFilter = ({
@@ -57,9 +26,7 @@ const VehicleFilter = ({
   setSelectedCategory,
   setSelectedVehicle,
 }: VehicleFilterProps) => {
-  const lastSelected = useRef<
-    Record<VehicleCategoryOrAll, VehicleIdOrAll>
-  >({
+  const lastSelected = useRef<Record<VehicleCategoryOrAll, VehicleIdOrAll>>({
     all: "all",
     passenger: "all",
     commercial: "all",
@@ -71,10 +38,21 @@ const VehicleFilter = ({
     { value: "commercial", label: "Commercial", accent: "orange" },
   ];
 
-  const vehicleOptions = useMemo(
-    () => buildVehicleOptions(selectedCategory),
-    [selectedCategory],
-  );
+  const vehicleOptions = useMemo(() => {
+    const base: VehicleOption[] =
+      selectedCategory === "all"
+        ? VEHICLE_OPTIONS_WITH_ALL
+        : [
+            // keep "all" option always on top
+            {
+              ...VEHICLE_OPTIONS_WITH_ALL[0],
+              label: `All ${selectedCategory}`,
+            },
+            ...VEHICLE_OPTIONS.filter((v) => v.category === selectedCategory),
+          ];
+
+    return base;
+  }, [selectedCategory]);
 
   const handleVehicleChange = (vehicle: VehicleIdOrAll) => {
     setSelectedVehicle(vehicle);

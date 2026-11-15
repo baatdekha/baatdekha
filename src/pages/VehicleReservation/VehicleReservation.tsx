@@ -1,22 +1,24 @@
+import SearchBar from "@/components/SearchBar";
 import { useGoogleSheet } from "@/hooks/useGoogleSheet";
 import { useMemo, useState } from "react";
 import { FaCircleQuestion } from "react-icons/fa6";
 import { LoadingState } from "./LoadingState.tsx";
 import { RegisterVehicleCTA } from "./RegisterVehicleCTA.tsx";
-import SearchBar from "./SearchBar";
+import type {
+  VehicleCategoryOrAll,
+  VehicleIdOrAll,
+} from "./registry/vehicles.options.ts";
+import {
+  type VehicleId,
+  VEHICLE_REGISTRY,
+} from "./registry/vehicles.registry.ts";
 import VehicleCard from "./VehicleCard/VehicleCard";
 import VehicleFilter from "./VehicleFilter/VehicleFilter";
-import { vehicleOwnerSchema } from "./vehicleOwner.schema";
-import {
-  VEHICLE_REGISTRY,
-  type VehicleCategoryOrAll,
-  type VehicleId,
-  type VehicleIdOrAll,
-} from "./vehicleTypes";
+import { vehicleOwnerSchema, type VehicleOwnerRow } from "./vehicleOwner.schema";
 
 export const VehicleReservation = () => {
-  const SHEET_ID = "1pNTiO4UdVJNZFr-1P1wXrCx4xfpHw4-2dF-_0D_M55M"
-    //"1Z_QmGSKoEJ9ycIMpvnRv4ZbcKH4rzH-z";
+  const SHEET_ID = "1pNTiO4UdVJNZFr-1P1wXrCx4xfpHw4-2dF-_0D_M55M";
+  //"1Z_QmGSKoEJ9ycIMpvnRv4ZbcKH4rzH-z";
 
   const { data, loading, error } = useGoogleSheet(
     SHEET_ID,
@@ -29,16 +31,24 @@ export const VehicleReservation = () => {
     useState<VehicleCategoryOrAll>("passenger");
   const [searchQuery, setSearchQuery] = useState("");
 
-  type RawRow = (typeof data)[number];
+  // type RawRow = (typeof data)[number];
 
+  // Make VehicleId non-null
   function hasValidVehicleType(
-    row: RawRow,
-  ): row is RawRow & { vehicle_type: VehicleId } {
+    row: VehicleOwnerRow, // RawRow
+  ): row is VehicleOwnerRow & { vehicle_type: VehicleId } {
     return (
       typeof row.vehicle_type === "string" &&
       row.vehicle_type in VEHICLE_REGISTRY
     );
   }
+
+  /* Filter Layer
+   * Filter by :-
+   * 1. selected category
+   * 2. selected vehicle
+   * 3. search query
+   */
   const visibleVehicles = useMemo(() => {
     if (!data) return [];
 
@@ -61,6 +71,8 @@ export const VehicleReservation = () => {
       return matchesCategory && matchesVehicle && matchesSearch;
     });
   }, [data, selectedVehicle, selectedCategory, searchQuery]);
+
+
   if (error) return <ErrorState error={error} />;
 
   return (
@@ -99,7 +111,7 @@ export const VehicleReservation = () => {
             />
           </div>
 
-          {/* Search Bar (Placed below filter) */}
+          {/* Search Bar */}
           <div className="pt-4 p-4 border-t border-slate-50">
             <SearchBar
               onSearch={setSearchQuery}
@@ -116,7 +128,7 @@ export const VehicleReservation = () => {
               <h2 className="font-bold text-slate-700 capitalize text-lg">
                 {selectedVehicle === "all" ? "All Vehicles" : selectedVehicle}
               </h2>
-              {/* Matches Counter - Similar to Worker Project */}
+              {/* No. of Matches Counter */}
               <span className="text-xs font-bold bg-blue-100 text-blue-700 px-3 py-1.5 rounded-full shadow-sm">
                 {visibleVehicles.length} Found
               </span>
@@ -134,10 +146,10 @@ export const VehicleReservation = () => {
                     name={v.name}
                     village={v.village}
                     contact={v.mobile_no}
-                    vehicle_type={v.vehicle_type} // Passing vehicle_type as requested
+                    vehicle_type={v.vehicle_type}
                     Icon={
                       VEHICLE_REGISTRY[v.vehicle_type]?.Icon || FaCircleQuestion
-                    } // Keeping Icon prop
+                    }
                   />
                 ))
               ) : (

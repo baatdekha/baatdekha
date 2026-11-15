@@ -1,6 +1,4 @@
-import { VEHICLE_IDS, type VehicleId } from "./vehicleTypes";
-
-// const allowedVehicleTypes: VehicleTypes[] = ["van", "car", "tractor"];
+import { VEHICLE_IDS, type VehicleId } from "./registry/vehicles.registry";
 
 export const vehicleOwnerSchema = {
   parsers: {
@@ -15,9 +13,7 @@ export const vehicleOwnerSchema = {
         .toLowerCase()
         .trim()
         .replace(" ", "");
-      return VEHICLE_IDS.includes(val as VehicleId)
-        ? (val as VehicleId)
-        : null;
+      return VEHICLE_IDS.includes(val as VehicleId) ? (val as VehicleId) : null;
     },
   },
 } as const;

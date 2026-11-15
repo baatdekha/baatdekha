@@ -1,5 +1,5 @@
 export function LoadingState() {
-  // We create an array of 5 items to fill the screen
+  // create an array of 5 items to fill the screen
   const skeletons = Array.from({ length: 5 });
 
   return (
@@ -11,10 +11,10 @@ export function LoadingState() {
           style={{ opacity: 1 - i * 0.15 }} // Fades out bottom items slightly
         >
           {/* 1. Icon Box Skeleton */}
-          <div className="flex-shrink-0 w-16 h-16 bg-slate-100 rounded-2xl animate-skeleton" />
+          <div className="shrink-0 w-16 h-16 bg-slate-100 rounded-2xl animate-skeleton" />
 
           {/* 2. Text Content Skeleton */}
-          <div className="flex-grow flex flex-col gap-2">
+          <div className="grow flex flex-col gap-2">
             {/* Name line */}
             <div className="h-4 w-32 bg-slate-100 rounded-md animate-skeleton" />
             
@@ -26,7 +26,7 @@ export function LoadingState() {
           </div>
 
           {/* 3. Button Skeleton */}
-          <div className="flex-shrink-0 w-11 h-11 bg-slate-100 rounded-full animate-skeleton" />
+          <div className="shrink-0 w-11 h-11 bg-slate-100 rounded-full animate-skeleton" />
         </div>
       ))}
       

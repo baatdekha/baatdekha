@@ -1,9 +1,9 @@
 // components/WorkersFinder/WorkersFinder.tsx
 import { RadioToolbar } from "@/components/RadioToolbar";
+import SearchBar from "@/components/SearchBar.tsx";
 import { useGoogleSheet } from "@/hooks/useGoogleSheet";
 import { useMemo, useState } from "react";
 import { FaFilter } from "react-icons/fa";
-import SearchBar from "../VehicleReservation/SearchBar";
 import WorkerCard from "./WorkerCard/WorkerCard";
 import { WorkerSignupCTA } from "./WorkerSignupCTA.tsx";
 import { workersFinderSchema } from "./workersFinder.schema";

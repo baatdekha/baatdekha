@@ -1,7 +1,8 @@
 import React from "react";
 import { type IconType } from "react-icons";
 import { MdCall } from "react-icons/md";
-import { VEHICLE_REGISTRY, type VehicleId } from "../vehicleTypes";
+import { getVehicleOption } from "../registry/vehicles.options";
+import { type VehicleId } from "../registry/vehicles.registry";
 
 interface VehicleCardProps {
   name: string;
@@ -17,7 +18,7 @@ export default function VehicleCard({
   contact,
   vehicle_type,
 }: VehicleCardProps) {
-  const meta = VEHICLE_REGISTRY[vehicle_type];
+  const meta = getVehicleOption(vehicle_type);
 
   if (!meta) return null;
 
@@ -47,7 +48,7 @@ export default function VehicleCard({
 
           {/* Badge colors come directly from the Registry */}
           <span
-            className={`px-2 py-0.5 ${meta.bg ?? "bg-neutral-200/70" } ${meta.text ?? "text-neutral-700" } text-[10px] font-extrabold rounded-md uppercase whitespace-nowrap`}
+            className={`px-2 py-0.5 ${meta.bg } ${meta.text } text-[10px] font-extrabold rounded-md uppercase whitespace-nowrap`}
           >
             {meta.label}
           </span>
